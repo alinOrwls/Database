@@ -20,11 +20,13 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {%   for entry in entry   %}
                             <tr class="">
-                                <td scope="row">R1C1</td>
-                                <td>R1C2</td>
-                                <td>R1C3</td>
+                                <td>{{ entry [0] }}</td>
+                                <td>{{ entry [1] }}</td>
+                                <td>{{ entry [2] }}</td>
                             </tr>
+                            {% endfor%}
                         </tbody>
                     </table>
                 </div>

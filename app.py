@@ -22,7 +22,14 @@ except Exception as ex:
 
 @app.route('/')
 def main():
-    return render_template('index.html')
+
+    cur=connection.cursor()
+    cur.execute("SELECT * FROM public.journal")
+    entry=cur.fetchall()
+    connection.commit()
+    print(entry)
+
+    return render_template('index.html', entry=entry)
 
 @app.route("/register", methods=["GET"])
 def register_page():
@@ -38,7 +45,14 @@ def logout():
 
 @app.route('/create')
 def create():
-    return render_template("create.html")
+
+    cur=connection.cursor()
+    cur.execute("SELECT * FROM public.journal")
+    entry=cur.fetchall()
+    connection.commit()
+    print(entry)
+
+    return render_template("create.html", entry=entry)
 
 @app.route('/create/post', methods=["POST"])
 def create_post():
@@ -46,20 +60,30 @@ def create_post():
     _content=request.form['content']
 
     cur = connection.cursor()
-    cur.execute("INSERT INTO  public.journal (title, content) VALUES ( ' %s ', ' %s ')", (_title, _content))
+    cur.execute("INSERT INTO  public.journal (title, content) VALUES ( %s , %s )", (_title, _content))
     connection.commit()
-    connection.close()
-    
-  
 
     print(_title)
     print(_content)
     return redirect("/create")
 
 
-@app.route('/delete')
+@app.route('/delete', methods = ['POST'])
 def delete():
-    return render_template("create.html")
+    _id = request.form[ 'txtID']
+    print(_id)
+
+    cur=connection.cursor()
+    cur.execute("SELECT * FROM public.journal WHERE id=%s", (_id))
+    entry=cur.fetchall()
+    connection.commit()
+    print(entry)
+
+    cur=connection.cursor()
+    cur.execute("DELETE FROM public.journal WHERE id=%s", (_id))
+    connection.commit()
+
+    return redirect('/')
 
 
 

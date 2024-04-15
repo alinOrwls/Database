@@ -5,22 +5,25 @@
 
     <div class="container">
         <div class="row">
+
+            {% for entry in entry%}
             <div class="col-md-3">
                 <div class="card">
-                    <img class="card-img-top" src="holder.js/100x180/" alt="Title" />
                     <div class="card-body">
-                        <h3 class="card-title">Titanic</h3>
-                        <p class="card-text">
-                        <h4>Movie brief</h4>
-                        <a name="" id="" class="btn btn-danger" href="#" role="button">Delete</a>
+                        <h3 class="card-title">{{ entry [1]  }}</h3>
+                        <p>{{ entry [2]  }} </p>                        
+                            <form action="/delete"  method="post">
+                                <button value="{{ entry [0] }}"  name="txtID"   id="txtID" type="submit" class="btn btn-danger">Delete </button>
+                                
+                            </form>
 
-                        </p>
                     </div>
                 </div>
 
             </div>
-
+                {% endfor %}
         </div>
+    </div>
 
 
 
