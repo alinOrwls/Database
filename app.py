@@ -1,9 +1,11 @@
-from flask import Flask, request, render_template , redirect
+from flask import Flask, request, render_template , redirect, get_flashed_messages, flash, session
 import psycopg2
+import psycopg2.extras
 
 
 app = Flask (__name__)
-# app.config.from_object('config')
+app.secret_key = 'developers'
+
 
 try:
     connection=psycopg2.connect(
@@ -31,13 +33,36 @@ def main():
 
     return render_template('index.html', entry=entry)
 
-@app.route("/register", methods=["GET"])
-def register_page():
-    return render_template("register.html")
+@app.route("/register", methods=["GET", "POST"])
+def register(): 
+    cur = connection.cursor()
+  
+
+    if request.method == 'POST' and 'name' in request.form and 'password' in request.form:
+  
+        name = request.form['name']       
+        password = request.form['password']
+        
+        cur.execute( "SELECT * FROM   public.users  WHERE  name = %s", (name, ))
+        user = cur.fetchone()
+        connection.commit()
+        print(user)
+    else :
+        return render_template("register.html")
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+        name = request.form['name']
+        password = request.form['password']
+
+        cur = connection.cursor()
+        cur.execute("INSERT INTO  public.users  (name, password) VALUES ( %s , %s )", (name, password))
+        connection.commit()    
+            
+        flash('You have succesfully registered!')
+        print(name)
+        print(password)
+        return render_template("login.html")
 
 @app.route('/logout')
 def logout():
