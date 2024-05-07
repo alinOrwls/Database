@@ -13,6 +13,13 @@
 </head>
 
 <body>
+    {% with messages = get_flashed_messages() %}
+         {% if messages%}
+            {% for message in messages %}
+                <h3>{{ message }}</h3>
+            {% endfor%}
+        {% endif%}
+    {% endwith%}
 
     <main>
         <div class="container">
@@ -37,13 +44,15 @@
                                         aria-describedby="helpId" placeholder=" Password" />
                                     </br>
                                     
-                                    <button type="submit" class="btn btn-success">Login</button>
-                                    <button type="submit" value="Register" class="btn btn-info">Register</button>
+                                    <button value= "login"   type="submit" class="btn btn-success">Login</button>
+                                    <a href="/register" class="btn btn-dark"> Register</a></p>
+                                   
                                   
 
                                 </div>
 
                             </form>
+                         
 
                         </div>
                         <div class="card-footer text-muted"></div>

@@ -13,6 +13,13 @@
 </head>
 
 <body>
+    {% with messages = get_flashed_messages()  %}
+        {% if messages%}
+            {% for message in messages %}
+            <h3>{{ message }}</h3>
+            {% endfor%}
+        {% endif%}
+    {% endwith%}
 
     <main>
         <div class="container">
@@ -34,28 +41,13 @@
                                         aria-describedby="helpId" placeholder=" Username" />
                                     <label for="" class="form-label">Password</label>
                                     <input type="password" class="form-control" name="password" id="password"
-                                        aria-describedby="helpId" placeholder=" Password" />
-                                    
+                                        aria-describedby="helpId" placeholder=" Password" /> 
 
                                 </div>
-
                                 <div class= "form-group">
-                                    {% with messagers = get_flashed_messages%}
-                                    {% if messages %}
-                                    {%  for messages in messages %}
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        {{ message }}
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <span aria-hidden="true"> x </span>
-                                        </button>
-                                    </div>
-                                    {% endfor %}
-                                    {%  endif %}
-                                    {%  endwith %}
-                                    <input type="submit" value="Register" class="form-control btn btn-primary">
-                                    
+                                   <input type="submit" value="Register" class="form-control btn btn-primary"> 
                                     <p style="padding: 5px;">
-                                     <a href="#" class="btn btn-dark"> Login </a></p>
+                                     <a href="/login" class="btn btn-dark"> Login </a></p>
                                 </div>
                                 
 

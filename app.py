@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template , redirect, get_flashed_messages, flash, session
+from flask import Flask, request, render_template , redirect, get_flashed_messages, flash, session, url_for
 import psycopg2
 import psycopg2.extras
+
 
 
 app = Flask (__name__)
@@ -35,38 +36,56 @@ def main():
 
 @app.route("/register", methods=["GET", "POST"])
 def register(): 
-    cur = connection.cursor()
-  
+        if request.method =='POST':
+            cur = connection.cursor() 
 
-    if request.method == 'POST' and 'name' in request.form and 'password' in request.form:
-  
-        name = request.form['name']       
-        password = request.form['password']
+            name = request.form['name']  
+            password = request.form['password']
+
+            sql = "INSERT INTO public.users (name, password )VALUES(%s ,%s)"
+            cur.execute(sql, (name, password))
+            connection.commit()
+            flash('Register succesfully', 'success')
+            return redirect('/login')
+        else: 
+            return render_template("register.html")
         
-        cur.execute( "SELECT * FROM   public.users  WHERE  name = %s", (name, ))
-        user = cur.fetchone()
-        connection.commit()
-        print(user)
-    else :
-        return render_template("register.html")
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-        name = request.form['name']
-        password = request.form['password']
-
-        cur = connection.cursor()
-        cur.execute("INSERT INTO  public.users  (name, password) VALUES ( %s , %s )", (name, password))
-        connection.commit()    
+        if request.method == 'POST':
+            name = request.form['name']
+            password = request.form['password']
+ 
+            cur = connection.cursor()
+            # Execute a SELECT query to retrieve user information
+            cur.execute("SELECT id, password FROM users WHERE name = %s", (name,))
+            user = cur.fetchone()
             
-        flash('You have succesfully registered!')
-        print(name)
-        print(password)
-        return render_template("login.html")
+            if(user and (user[1], password)): # Store user ID in session to indicate user is logged in
+                session['user_id'] = user[0]
+               
+                # Display success message
+                flash('Logged in successfully!', 'success')
+                # Redirect to home page
+                return redirect('/create')
+            else:
+                # Display error message for invalid credentials
+                flash('Invalid username or password', 'error')
+                return redirect('/login')
+           
+        else:
+            return render_template("login.html")
+
 
 @app.route('/logout')
 def logout():
-    return render_template("index.html")
+    session.pop('user_id', None)
+    return redirect('/')
+
+@app.route('/logoutpage')
+def logoutpage():
+     return render_template('logout.html')
 
 @app.route('/create')
 def create():
@@ -83,9 +102,10 @@ def create():
 def create_post():
     _title=request.form['title' ]
     _content=request.form['content']
-
+    _user_id =   session['user_id']  
+   
     cur = connection.cursor()
-    cur.execute("INSERT INTO  public.journal (title, content) VALUES ( %s , %s )", (_title, _content))
+    cur.execute("INSERT INTO  public.journal (title, content, user_id) VALUES ( %s , %s, %s )", (_title, _content, _user_id))
     connection.commit()
 
     print(_title)
